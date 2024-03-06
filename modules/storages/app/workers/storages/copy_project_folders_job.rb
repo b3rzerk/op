@@ -30,10 +30,8 @@
 
 module Storages
   class CopyProjectFoldersJob < ApplicationJob
-    # include GoodJob::ActiveJobExtensions::Batches
-
-    retry_on Errors::PollingRequired, wait: 3, attempts: :unlimited
-    # discard_on HTTPX::HTTPError
+    retry_on Errors::PollingRequired, wait: 3, attempts: (Rails.env.test? ? 3 : :unlimited)
+    discard_on HTTPX::HTTPError
 
     def perform(user_id:, source_id:, target_id:, work_package_map:)
       target = ProjectStorage.find(target_id)
