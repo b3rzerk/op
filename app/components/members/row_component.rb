@@ -80,7 +80,7 @@ module Members
       count = member.shared_work_package_ids.length
       return if count.zero?
 
-      path = if count == member.total_shared_work_package_ids.length
+      path = if member.other_shared_work_packages_count.zero?
         helpers.project_work_packages_shared_with_path(principal, member.project)
       else
         helpers.project_work_packages_with_ids_path(member.shared_work_package_ids, member.project)

@@ -34,21 +34,18 @@ module Members
 
     delegate :principal,
              :shared_work_package_ids,
-             :inherited_shared_work_package_ids,
-             :total_shared_work_package_ids,
+             :other_shared_work_packages_count?,
+             :direct_shared_work_packages_count,
+             :inherited_shared_work_packages_count?,
+             :total_shared_work_packages_count,
              to: :model
 
     def shared_work_packages_count = model.shared_work_package_ids.length
-    def inherited_shared_work_packages_count = model.inherited_shared_work_package_ids.length
-    def total_shared_work_packages_count = model.total_shared_work_package_ids.length
 
     def shared_role_id = row.table.shared_role_id
     def shared_role_name = row.table.shared_role_name
 
-    def only_inherited_shared_work_packages?
-      # TODO: true, but not really correct
-      shared_work_packages_count == inherited_shared_work_packages_count
-    end
+    def only_inherited_shared_work_packages? = direct_shared_work_packages_count.zero?
 
     def administration_settings_link
       link_to 'administration settings', edit_user_path(model.principal, tab: :groups)
@@ -58,8 +55,8 @@ module Members
       "principal-#{principal.id}-delete-work-package-shares-dialog"
     end
 
-    def delete_url(project_member: nil, work_package_shares_role_id: nil)
-      url_for(controller: '/members', action: 'destroy_by_principal', principal_id: principal, project_member:, work_package_shares_role_id:)
+    def delete_url(work_package_shares_role_id: nil)
+      url_for(controller: '/members', action: 'destroy_by_principal', principal_id: principal, work_package_shares_role_id:)
     end
   end
 end

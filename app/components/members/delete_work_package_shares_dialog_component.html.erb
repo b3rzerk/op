@@ -27,73 +27,95 @@ See COPYRIGHT and LICENSE files for more details.
 
 ++#%>
 
-<%= render(Primer::Alpha::Dialog.new(id:, title: 'Revoke work package shares')) do |dialog| %>
+<%= render(Primer::Alpha::Dialog.new(id:, title: "Revoke work package shares")) do |dialog| %>
   <% dialog.with_header(variant: :large) %>
 
-  <% if shared_role_id %>
+  <% if other_shared_work_packages_count? %>
     <% if only_inherited_shared_work_packages? %>
       <% dialog.with_body do %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          The work packages shares with role <%= shared_role_name %> shared via to groups cannot be removed.
+        <%= render(Primer::Beta::Text.new(tag: "p")) do %>
+          The work packages shares with role <%= shared_role_name %> shared via groups cannot be removed.
         <% end %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
+        <%= render(Primer::Beta::Text.new(tag: "p")) do %>
           You can either revoke the share to the group or remove this specific member from the group in the <%= administration_settings_link %>.
         <% end %>
       <% end %>
-    <% elsif inherited_shared_work_packages_count > 0 %>
-      <% dialog.with_body do %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          [<%= total_shared_work_packages_count %> work packages] have been shared with this user.
-          [Only <%= shared_work_packages_count %> work packages] have been shared with <%= shared_role_name %> permissions.
-        <% end %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          Would you like to revoke access to all shared work packages, or only those with edit permissions? (This will not affect work packages shared with their group).
-        <% end %>
+
+      <% dialog.with_footer do %>
+        <%= render(Primer::Beta::Button.new(data: { close_dialog_id: id })) { t(:button_cancel) } %>
       <% end %>
     <% else %>
-      <% dialog.with_body do %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          [<%= total_shared_work_packages_count %> work packages] have been shared with this user.
-          From this, only [<%= shared_work_packages_count %> work packages] have been shared with role <%= shared_role_name %>.
+      <% if inherited_shared_work_packages_count? %>
+        <% dialog.with_body do %>
+          <%= render(Primer::Beta::Text.new(tag: "p")) do %>
+            [<%= total_shared_work_packages_count %> work packages] have been shared with this user.
+            [Only <%= shared_work_packages_count %> work packages] have been shared with <%= shared_role_name %> permissions.
+          <% end %>
+          <%= render(Primer::Beta::Text.new(tag: "p")) do %>
+            Would you like to revoke access to all shared work packages, or only those with edit permissions? (This will not affect work packages shared with their group).
+          <% end %>
         <% end %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          What access do you want to revoke?
+      <% else %>
+        <% dialog.with_body do %>
+          <%= render(Primer::Beta::Text.new(tag: "p")) do %>
+            <% if principal.is_a?(Group) %>
+              [<%= total_shared_work_packages_count %> work packages] have been shared with this group.
+            <% else %>
+              [<%= total_shared_work_packages_count %> work packages] have been shared with this user.
+            <% end %>
+            From this, only [<%= shared_work_packages_count %> work packages] have been shared with role <%= shared_role_name %>.
+          <% end %>
+          <%= render(Primer::Beta::Text.new(tag: "p")) do %>
+            What access do you want to revoke?
+          <% end %>
         <% end %>
+      <% end %>
+
+      <% dialog.with_footer do %>
+        <%= render(Primer::Beta::Button.new(data: { close_dialog_id: id })) { t(:button_cancel) } %>
+        <%= render(Primer::Beta::Button.new(scheme: :danger, tag: :a, href: delete_url(work_package_shares_role_id: "all"), data: { method: :delete })) { "Revoke all" } %>
+        <%= render(Primer::Beta::Button.new(scheme: :danger, tag: :a, href: delete_url(work_package_shares_role_id: shared_role_id), data: { method: :delete })) { "Revoke only #{shared_role_name}" } %>
       <% end %>
     <% end %>
   <% else %>
     <% if only_inherited_shared_work_packages? %>
       <% dialog.with_body do %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
+        <%= render(Primer::Beta::Text.new(tag: "p")) do %>
           The work packages shares shared via groups cannot be removed.
         <% end %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
+        <%= render(Primer::Beta::Text.new(tag: "p")) do %>
           You can either revoke the share to the group or remove this specific member from the group in the <%= administration_settings_link %>.
         <% end %>
       <% end %>
-    <% elsif inherited_shared_work_packages_count > 0 %>
-      <% dialog.with_body do %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          [<%= shared_work_packages_count %> work packages] have been shared with this user.
-          [<%= inherited_shared_work_packages_count %> work packages] are shared with a group the member is part of.
-        <% end %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          The work packages shares due to groups cannot be removed, alternatively you can either revoke the share to the group or this specific member from the group in the <%= administration_settings_link %>.
-        <% end %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          This action will revoke their access only to the work packages shared individually with the user.
-        <% end %>
+
+      <% dialog.with_footer do %>
+        <%= render(Primer::Beta::Button.new(data: { close_dialog_id: id })) { t(:button_cancel) } %>
       <% end %>
     <% else %>
-      <% dialog.with_body do %>
-        <%= render(Primer::Beta::Text.new(tag: 'p')) do %>
-          [<%= shared_work_packages_count %> work packages] have been shared with this user. This action will revoke their access to all of them.
+      <% if inherited_shared_work_packages_count? %>
+        <% dialog.with_body do %>
+          <%= render(Primer::Beta::Text.new(tag: "p")) do %>
+            [<%= shared_work_packages_count %> work packages] have been shared with this user.
+            This action will revoke their access to all of them, but the work packages shared with a group.
+          <% end %>
+        <% end %>
+      <% else %>
+        <% dialog.with_body do %>
+          <%= render(Primer::Beta::Text.new(tag: "p")) do %>
+            <% if principal.is_a?(Group) %>
+              [<%= shared_work_packages_count %> work packages] have been shared with this group.
+            <% else %>
+              [<%= shared_work_packages_count %> work packages] have been shared with this user.
+            <% end %>
+            This action will revoke their access to all of them.
+          <% end %>
         <% end %>
       <% end %>
-    <% end %>
-  <% end %>
 
-  <% dialog.with_footer do %>
-    <%= render(Primer::Beta::Button.new(data: { close_dialog_id: id })) { t(:button_cancel) } %>
+      <% dialog.with_footer do %>
+        <%= render(Primer::Beta::Button.new(data: { close_dialog_id: id })) { t(:button_cancel) } %>
+        <%= render(Primer::Beta::Button.new(scheme: :danger, tag: :a, href: delete_url(work_package_shares_role_id: "all"), data: { method: :delete })) { "Revoke access" } %>
+      <% end %>
+    <% end %>
   <% end %>
 <% end %>
