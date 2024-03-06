@@ -104,8 +104,8 @@ RSpec.describe Members::Scopes::WithSharedWorkPackagesInfo do
             m.id,
             {
               ids: m.shared_work_package_ids,
-              inherited: m.inherited_shared_work_package_ids,
-              total: m.total_shared_work_package_ids,
+              inherited: m.inherited_shared_work_packages_count,
+              total: m.total_shared_work_packages_count,
             }
           ]
         end
@@ -116,12 +116,12 @@ RSpec.describe Members::Scopes::WithSharedWorkPackagesInfo do
 
       it 'returns info for all roles' do
         expect(subject).to match_array [
-          ['x', active_user_member.id, { ids: [], inherited: [], total: [] }],
-          ['a', user_a_view_member.id, { ids: both_wps, inherited: [], total: both_wps }],
-          ['a', user_a_comment_member.id, { ids: both_wps, inherited: [], total: both_wps }],
-          ['b', user_b_view_member.id, { ids: only_wp_a, inherited: only_wp_a, total: only_wp_a }],
-          ['g', group_comment_member.id, { ids: only_wp_a, inherited: [], total: only_wp_a }],
-          ['c', user_c_inherited_member.id, { ids: only_wp_a, inherited: only_wp_a, total: only_wp_a }],
+          ['x', active_user_member.id, { ids: [], inherited: 0, total: 0 }],
+          ['a', user_a_view_member.id, { ids: both_wps, inherited: 0, total: 2 }],
+          ['a', user_a_comment_member.id, { ids: both_wps, inherited: 0, total: 2 }],
+          ['b', user_b_view_member.id, { ids: only_wp_a, inherited: 1, total: 1 }],
+          ['g', group_comment_member.id, { ids: only_wp_a, inherited: 0, total: 1 }],
+          ['c', user_c_inherited_member.id, { ids: only_wp_a, inherited: 1, total: 1 }],
         ]
       end
     end
@@ -131,12 +131,12 @@ RSpec.describe Members::Scopes::WithSharedWorkPackagesInfo do
 
       it 'returns info for view roles' do
         expect(subject).to match_array [
-          ['x', active_user_member.id, { ids: [], inherited: [], total: [] }],
-          ['a', user_a_view_member.id, { ids: only_wp_a, inherited: [], total: both_wps }],
-          ['a', user_a_comment_member.id, { ids: only_wp_a, inherited: [], total: both_wps }],
-          ['b', user_b_view_member.id, { ids: only_wp_a, inherited: [], total: only_wp_a }],
-          ['g', group_comment_member.id, { ids: [], inherited: [], total: only_wp_a }],
-          ['c', user_c_inherited_member.id, { ids: [], inherited: [], total: only_wp_a }],
+          ['x', active_user_member.id, { ids: [], inherited: 0, total: 0 }],
+          ['a', user_a_view_member.id, { ids: only_wp_a, inherited: 0, total: 2 }],
+          ['a', user_a_comment_member.id, { ids: only_wp_a, inherited: 0, total: 2 }],
+          ['b', user_b_view_member.id, { ids: only_wp_a, inherited: 0, total: 1 }],
+          ['g', group_comment_member.id, { ids: [], inherited: 0, total: 1 }],
+          ['c', user_c_inherited_member.id, { ids: [], inherited: 0, total: 1 }],
         ]
       end
     end
@@ -146,12 +146,12 @@ RSpec.describe Members::Scopes::WithSharedWorkPackagesInfo do
 
       it 'returns info for comment roles' do
         expect(subject).to match_array [
-          ['x', active_user_member.id, { ids: [], inherited: [], total: [] }],
-          ['a', user_a_view_member.id, { ids: only_wp_b, inherited: [], total: both_wps }],
-          ['a', user_a_comment_member.id, { ids: only_wp_b, inherited: [], total: both_wps }],
-          ['b', user_b_view_member.id, { ids: only_wp_a, inherited: only_wp_a, total: only_wp_a }],
-          ['g', group_comment_member.id, { ids: only_wp_a, inherited: [], total: only_wp_a }],
-          ['c', user_c_inherited_member.id, { ids: only_wp_a, inherited: only_wp_a, total: only_wp_a }],
+          ['x', active_user_member.id, { ids: [], inherited: 0, total: 0 }],
+          ['a', user_a_view_member.id, { ids: only_wp_b, inherited: 0, total: 2 }],
+          ['a', user_a_comment_member.id, { ids: only_wp_b, inherited: 0, total: 2 }],
+          ['b', user_b_view_member.id, { ids: only_wp_a, inherited: 1, total: 1 }],
+          ['g', group_comment_member.id, { ids: only_wp_a, inherited: 0, total: 1 }],
+          ['c', user_c_inherited_member.id, { ids: only_wp_a, inherited: 1, total: 1 }],
         ]
       end
     end
