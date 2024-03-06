@@ -2,7 +2,19 @@ As of now, this page is still a stub. In particular, the considerations on when 
 
 For now, it can be stated that OpenProject employs Dialogs for more purposes than GitHub Primer specifies.
 
-## Confirmation dialogs
+## Composition
+
+We follow [Primers anatomy](https://primer.style/components/dialog#anatomy) definition of the Dialog.
+
+## Dos and Dont's
+
+Please refer to [Primers usage definition](https://primer.style/components/dialog#usage).
+
+## Special kinds of dialogs
+
+We have multiple kind of dialogs that re-appear throughout the whole application. In order to make sure, they all look and feel alike, we further specify them here.
+
+### Confirmation dialogs
 
 Whenever a user is about to perform an action that has a significant impact, a confirmation dialog is shown.
 
@@ -14,7 +26,12 @@ Or it can be to ascertain the user actually wants to destroy a model.
 
 <%= embed OpenProject::Common::DialogPreview, :confirm_deletion %>
 
-## Form dialogs
+
+#### Where it's used
+
+- Project list -> Delete the project list
+
+### Form dialogs
 
 Within the OpenProject application, forms are oftentimes rendered within a dialog. It is used e.g. for
 the creation of new models or for the modification of existing ones.
@@ -51,3 +68,24 @@ In pseudo html, the logical format is then like this:
 ```
 
 <%= embed OpenProject::Common::DialogPreview, :form %>
+
+
+#### Where it's used
+
+- WorkPackage -> Meeting Tab -> Add meeting to WorkPackage
+
+### User nudging modal
+
+The dialog is used to guide a user through a complex process (e.g. when setting up an OAuth setting).
+
+<lookbook-embed
+preview="OpenProject::Storages::Admin::OAuthAccessGrantNudgeModalComponentPreview"
+scenario="default"
+panels="">
+</lookbook-embed>
+
+> Example of modal to lead a user to a complex process
+
+#### Where it's used
+
+- Admin -> Storages -> OAuth Grant Access
