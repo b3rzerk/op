@@ -47,7 +47,7 @@ module Storages
           .includes(:creator)
           .where(container_id: @work_packages_map.keys, container_type: "WorkPackage")
 
-        return create_unmanaged_file_links(source_file_links) if @source.project_folder_manual?
+        return create_unmanaged_file_links(source_file_links) unless @source.project_folder_automatic?
 
         create_managed_file_links(source_file_links)
       end

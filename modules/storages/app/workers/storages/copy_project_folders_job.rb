@@ -44,7 +44,7 @@ module Storages
                               else
                                 ProjectStorages::CopyProjectFoldersService
                                   .call(source:, target:)
-                                  .on_success { |success| prepare_polling(success.result) }
+                                  .on_success { |success| prepare_polling(success.result, source) }
                               end
 
       # TODO: Do Something when this fails
@@ -58,11 +58,12 @@ module Storages
 
     private
 
-    def prepare_polling(result)
+    def prepare_polling(result, source)
       return if result[:id]
+      return unless result[:url] # Inactive project storages can return id: nil here.
 
       Thread.current[job_id] = result[:url]
-      raise Errors::PollingRequired, "#{job_id} Storage requires polling"
+      raise Errors::PollingRequired, "#{job_id} Storage requires #{source.storage.name} polling"
     end
 
     def polling?

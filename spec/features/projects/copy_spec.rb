@@ -27,7 +27,6 @@
 #++
 
 require 'spec_helper'
-require 'dry/container/stub'
 
 RSpec.describe 'Projects copy', :js, :with_cuprite do
   describe 'with a full copy example' do
@@ -126,7 +125,10 @@ RSpec.describe 'Projects copy', :js, :with_cuprite do
     let(:parent_field) { FormFields::SelectFormField.new :parent }
 
     let(:storage) { create(:nextcloud_storage) }
-    let(:project_storage) { create(:project_storage, project:, storage:) }
+    let(:project_storage) do
+      create(:project_storage, project:, storage:)
+    end
+
     let(:file_link) { create(:file_link, container: work_package, storage:) }
 
     before do
@@ -139,14 +141,7 @@ RSpec.describe 'Projects copy', :js, :with_cuprite do
       # The jobs are created as part of the object creation.
       clear_enqueued_jobs
       clear_performed_jobs
-      Storages::Peripherals::Registry.enable_stubs!
-
-      Storages::Peripherals::Registry.stub('nextcloud.commands.copy_template_folder', ->(*) {
-        ServiceResult.success(result: { id: 'folder-id' })
-      })
     end
-
-    after { Storages::Peripherals::Registry.unstub }
 
     it 'copies projects and the associated objects' do
       original_settings_page = Pages::Projects::Settings.new(project)
